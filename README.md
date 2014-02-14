@@ -6,18 +6,17 @@ An arbitrary-precision decimal library for PHP.
 Background
 ----------
 
-The PHP language only offers two numeric data types: int and float.  Neither of
-these types are suitable for a wide range of real-world problems, where exact
-arithmetic with values of arbitrary precision are required---notably, when
-working with monetary values.
+The PHP language only offers two numeric data types: *int* and *float*.
+Neither of these types are suitable for a substantial set of real-world
+problems, where exact arithmetic with values of arbitrary precision are
+required -- notably, when working with monetary values.
 
-PHP's optional extension 'BCMath' provides some limited features in this area,
-but it is awkward to use with arbitrary precision, and it does not support
-rounding.
+PHP's optional extension [BCMath][1] provides some limited features in this
+area, but it is awkward to use when precision is variable, and it does not
+support rounding.
 
 This library uses the BCMath functions internally, but hides them behind a more
-convenient, object-oriented, and intuitive API, inspired by Python's standard
-library module 'decimal'.
+convenient, object-oriented, and intuitive API.
 
 Installation
 ------------
@@ -33,8 +32,9 @@ Usage
 -----
 
 One classic example of how binary floating-point values can ruin your day is
-the expression (0.1 + 0.1 + 0.1 - 0.3), which is of course zero.  Let's use
-this as a worked example.  First, using PHP's built-in float data type:
+the expression (0.1 + 0.1 + 0.1 - 0.3), which is of course equal to zero.
+Let's use this as a worked example.  First, using PHP's built-in float data
+type:
 
     php > $n = 0.1 + 0.1 + 0.1 - 0.3;
     php > var_dump($n);
@@ -55,10 +55,10 @@ most obvious place to turn is the BCMath extension, which would look like:
     php > var_dump(bccomp($n, 0) == 0);
     bool(true)
 
-Now we're getting the right answer, but it's an unreadable mess, and it gets
-worse if you don't know ahead of time what the precision of your inputs is
-going to be, and therefore can't choose a global value for bcscale that will be
-appropriate for all circumstances.
+Now we're at least getting the right answer, but the code is an unreadable
+mess, and it gets worse if you don't know ahead of time what the precision of
+your inputs is going to be, and therefore can't choose a global value for
+bcscale that will be appropriate for all circumstances.
 
 Enter php-decimal:
 
@@ -79,8 +79,8 @@ greater scale, then we would have used that scale instead.
 
 Unfortunately, as PHP does not offer any way to hook into its built-in
 comparison and arithmetic operators, it isn't possible to use natural syntax
-like $c = $a + $b, where $a and $b are Decimal objects.  We have to make do
-with relatively ugly method calls.
+like `$c = $a + $b`, where `$a` and `$b` are Decimal objects.  We have to make
+do with relatively ugly method calls.
 
 Internals
 ---------
@@ -93,10 +93,10 @@ Each instance of the Decimal class consists of:
 
 Each Decimal value represents the real number *n* such that:
 
-    n = [-]digits * (10 ^ exponent)
+    n = [-]digits × (10 ^ exponent)
 
 The number 7500 would be therefore represented internally by the values
-('75', '2', false), respectively, as 7500 = 75 x 10^2.
+`('75', 2, false)`, respectively, as 7500 = 75 × 10^2.
 
 It can be seen that, for every real number which has a finite representation in
 decimal form, there are infinitely many possible Decimal representations, but
@@ -122,7 +122,7 @@ standards.  It would be possible to extend the library into compliance, but at
 this time the author has no intention of doing so.
 
 In particular, php-decimal does not attempt to represent abstract numeric
-concepts like 'Not a Number', infinity or negative infinity.
+concepts like NaN ("Not a Number"), infinity or negative infinity.
 
 License
 -------
@@ -133,9 +133,11 @@ which can be found in the LICENSE file at the top level of the repository.
 Acknowledgements
 ----------------
 
-This library was heavily inspired by the [decimal][1] module of Python's standard
-library, and the [numeric data type][2] of PostgreSQL.
+This library was heavily inspired by the [decimal][2] module of Python's
+standard library, and the [numeric data type][3] of PostgreSQL.  If any credit
+is due, most of it belongs to the authors of these projects.
 
-  [1]: http://docs.python.org/2/library/decimal.html
-  [2]: http://www.postgresql.org/docs/current/static/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL
+  [1]: http://au2.php.net/manual/en/book.bc.php
+  [2]: http://docs.python.org/2/library/decimal.html
+  [4]: http://www.postgresql.org/docs/current/static/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL
 
