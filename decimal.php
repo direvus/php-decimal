@@ -17,6 +17,8 @@
 namespace Decimal;
 
 const ZERO = '0';
+const EXP_MARK = 'e';
+const RADIX_MARK = '.';
 
 class Decimal {
     public $digits;
@@ -36,14 +38,14 @@ class Decimal {
             // If the value contains an exponent specifier, parse and remove 
             // it.
             $clean = strtolower($clean);
-            $pos = strrpos($clean, 'e');
+            $pos = strrpos($clean, EXP_MARK);
             if($pos !== false){
                 $this->exponent = (int) substr($clean, $pos + 1);
                 $clean = substr($clean, 0, $pos);
             }
             // Remove the period and decrease the exponent by one for each 
             // digit following the period.
-            $pos = strpos($clean, '.');
+            $pos = strpos($clean, RADIX_MARK);
             if($pos !== false){
                 $clean = substr($clean, 0, $pos) . substr($clean, $pos + 1);
                 $this->exponent += ($pos - strlen($clean));
@@ -331,7 +333,7 @@ class Decimal {
 
     public function __toString(){
         if(!self::$raw_formatter instanceof Formatter){
-            self::$raw_formatter = new Formatter(null, '', '.');
+            self::$raw_formatter = new Formatter(null, '', RADIX_MARK);
         }
         return self::$raw_formatter->format($this);
     }
@@ -340,7 +342,7 @@ class Decimal {
         return (float) (string) $this;
     }
 
-    public function format($places=null, $grouping='', $radix_mark='.'){
+    public function format($places=null, $grouping='', $radix_mark=RADIX_MARK){
         $f = new Formatter($places, $grouping, $radix_mark);
         return $f->format($this);
     }
@@ -351,7 +353,8 @@ class Formatter {
     public $grouping;
     public $radix_mark;
 
-    public function __construct($places=null, $grouping='', $radix_mark='.'){
+    public function __construct(
+            $places=null, $grouping='', $radix_mark=RADIX_MARK){
         $this->places = $places;
         $this->grouping = $grouping;
         $this->radix_mark = $radix_mark;
@@ -404,13 +407,15 @@ class Formatter {
 }
 
 class MoneyFormatter extends Formatter {
-    public function __construct($places=2, $grouping='', $radix_mark='.'){
+    public function __construct(
+            $places=2, $grouping='', $radix_mark=RADIX_MARK){
         parent::__construct($places, $grouping, $radix_mark);
     }
 }
 
 class GroupedMoneyFormatter extends MoneyFormatter {
-    public function __construct($places=2, $grouping=',', $radix_mark='.'){
+    public function __construct(
+            $places=2, $grouping=',', $radix_mark=RADIX_MARK){
         parent::__construct($places, $grouping, $radix_mark);
     }
 }
@@ -432,9 +437,9 @@ function make($value){
 /*
  * Return the given number as a string with irrelevant characters removed.
  *
- * All characters other than digits, hyphen, period and the exponent marker 'e' 
- * are removed entirely, and any contiguous series of zeroes after a period at 
- * the end of the string are also removed.
+ * All characters other than digits, hyphen, the radix marker and the exponent 
+ * marker are removed entirely, and any contiguous series of zeroes after a 
+ * period at the end of the string are also removed.
  *
  * Raise an Exception if the value is not a valid numeric representation.  We 
  * make no attempt to interpret exponential notation.
@@ -443,17 +448,20 @@ function clean_value($value){
     if(is_int($value) || is_float($value)){
         return (string) $value;
     }else{
-        $clean = preg_replace('/[^\d.eE-]/', '', $value);
-        if(strpos($clean, '.') !== false){
-            $clean = rtrim(rtrim($clean, ZERO), '.');
+        $chars = '\d' . RADIX_MARK . EXP_MARK . '-';
+        $clean = preg_replace("/[^$chars]/i", '', $value);
+        if(strpos($clean, RADIX_MARK) !== false){
+            $clean = rtrim(rtrim($clean, ZERO), RADIX_MARK);
         }
-        if(!preg_match('/^-?\d+(?:\.\d*)?(?:[eE]-?\d*)?$/', $clean)){
+        $pattern = '/^-?\d+(?:[' . RADIX_MARK . ']\d*)?(?:' .
+                EXP_MARK . '-?\d*)?$/i';
+        if(!preg_match($pattern, $clean)){
             throw new Exception(
                 "Invalid Decimal value '$value'; " .
                 "must contain at least one digit, optionally preceeded " .
                 "by a sign specifier, optionally followed by " .
-                "a period and a fractional part, optionally followed by E " .
-                "and an integer exponent.");
+                RADIX_MARK . " and a fractional part, optionally followed " .
+                "by " . EXP_MARK . " and an integer exponent.");
         }
         return $clean;
     }
