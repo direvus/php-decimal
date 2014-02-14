@@ -139,5 +139,5 @@ is due, most of it belongs to the authors of these projects.
 
   [1]: http://au2.php.net/manual/en/book.bc.php
   [2]: http://docs.python.org/2/library/decimal.html
-  [4]: http://www.postgresql.org/docs/current/static/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL
+  [3]: http://www.postgresql.org/docs/current/static/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL
 
