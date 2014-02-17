@@ -3,6 +3,8 @@ php-decimal
 
 An arbitrary-precision decimal library for PHP.
 
+https://github.com/direvus/php-decimal
+
 Background
 ----------
 
@@ -129,6 +131,12 @@ License
 
 php-decimal is released under the "BSD 2-clause license", the full text of
 which can be found in the LICENSE file at the top level of the repository.
+
+Author
+------
+
+php-decimal was written by Brendan Jurd, in a fit of pique after PHP munged his
+numbers in early 2014.
 
 Acknowledgements
 ----------------
