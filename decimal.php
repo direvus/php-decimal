@@ -456,7 +456,7 @@ function clean_value($value){
         $pattern = '/^-?\d+(?:[' . RADIX_MARK . ']\d*)?(?:' .
                 EXP_MARK . '-?\d*)?$/i';
         if(!preg_match($pattern, $clean)){
-            throw new Exception(
+            throw new \DomainException(
                 "Invalid Decimal value '$value'; " .
                 "must contain at least one digit, optionally preceeded " .
                 "by a sign specifier, optionally followed by " .
