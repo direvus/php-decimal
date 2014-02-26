@@ -17,6 +17,6 @@ test: $(DIFFRESULT)
 	@test -f $< -a ! -s $< && echo "No differences found, test OK." || echo "Differences in output, test FAILED."
 
 clean:
-	rm -v $(DIFFRESULT) $(RESULT)
+	-rm -v $(DIFFRESULT) $(RESULT)
 
 .PHONY: test
