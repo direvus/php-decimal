@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/direvus/php-decimal.png?branch=master)](https://travis-ci.org/direvus/php-decimal)
+
 php-decimal
 ===========
 
