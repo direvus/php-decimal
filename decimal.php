@@ -52,11 +52,13 @@ class Decimal {
             }
             // Discard leading zeroes.
             $clean = ltrim($clean, ZERO);
-            // Remove trailing zeroes and increase the exponent by one for each 
-            // digit removed.
-            $len = strlen($clean);
-            $clean = rtrim($clean, ZERO);
-            $this->exponent += ($len - strlen($clean));
+            // For integer values (non-negative exponents), remove trailing 
+            // zeroes and increase the exponent by one for each digit removed.
+            if($this->exponent >= 0){
+                $len = strlen($clean);
+                $clean = rtrim($clean, ZERO);
+                $this->exponent += ($len - strlen($clean));
+            }
             if($clean == ''){
                 $this->digits = ZERO;
             }else{
@@ -299,7 +301,7 @@ class Decimal {
             $result->exponent = $exponent;
         }elseif($exponent > $result->exponent){
             if($result->exponent < 0){
-                $last = substr($result->digits, $count - 1, 1);
+                $last = substr($result->digits, $count, 1);
                 $roundoff = new Decimal;
                 if($method == PHP_ROUND_HALF_DOWN ||
                         ($method == PHP_ROUND_HALF_EVEN && ($last % 2 == 0)) ||
@@ -438,8 +440,7 @@ function make($value){
  * Return the given number as a string with irrelevant characters removed.
  *
  * All characters other than digits, hyphen, the radix marker and the exponent 
- * marker are removed entirely, and any contiguous series of zeroes after a 
- * period at the end of the string are also removed.
+ * marker are removed entirely.
  *
  * Raise an Exception if the value is not a valid numeric representation.  We 
  * make no attempt to interpret exponential notation.
@@ -450,9 +451,7 @@ function clean_value($value){
     }else{
         $chars = '\d' . RADIX_MARK . EXP_MARK . '-';
         $clean = preg_replace("/[^$chars]/i", '', $value);
-        if(strpos($clean, RADIX_MARK) !== false){
-            $clean = rtrim(rtrim($clean, ZERO), RADIX_MARK);
-        }
+        $clean = rtrim($clean, RADIX_MARK);
         $pattern = '/^-?\d+(?:[' . RADIX_MARK . ']\d*)?(?:' .
                 EXP_MARK . '-?\d*)?$/i';
         if(!preg_match($pattern, $clean)){
