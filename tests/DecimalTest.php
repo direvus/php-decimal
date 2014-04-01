@@ -49,4 +49,32 @@ class DecimalTest extends PHPUnit_Framework_TestCase {
         }
         $this->assertEquals($results, $expect);
     }
+
+    /**
+     * @covers Decimal\Decimal->quantize
+     */
+    public function testQuantize(){
+        $d = new D('12.375');
+        $this->assertEquals((string) $d->quantize(3),  '0');
+        $this->assertEquals((string) $d->quantize(2),  '0');
+        $this->assertEquals((string) $d->quantize(1),  '10');
+        $this->assertEquals((string) $d->quantize(0),  '12');
+        $this->assertEquals((string) $d->quantize(-1), '12.4');
+        $this->assertEquals((string) $d->quantize(-2), '12.38');
+        $this->assertEquals((string) $d->quantize(-3), '12.375');
+        $this->assertEquals((string) $d->quantize(-4), '12.375');
+    }
+
+    /**
+     * @covers Decimal\Decimal->round
+     */
+    public function testRound(){
+        $d = new D('12.375');
+        $this->assertEquals((string) $d->round(-1), '12');
+        $this->assertEquals((string) $d->round(0),  '12');
+        $this->assertEquals((string) $d->round(1),  '12.4');
+        $this->assertEquals((string) $d->round(2),  '12.38');
+        $this->assertEquals((string) $d->round(3),  '12.375');
+        $this->assertEquals((string) $d->round(4),  '12.375');
+    }
 }
