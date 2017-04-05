@@ -3,7 +3,7 @@ namespace Direvus\Decimal;
 
 include 'decimal.php';
 
-class DecimalTest extends \PHPUnit\Framework\TestCase {
+class DecimalTest extends \PHPUnit_Framework_TestCase {
     private $values = array(
         50,
         -25000,
