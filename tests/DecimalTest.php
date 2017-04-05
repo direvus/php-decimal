@@ -160,4 +160,30 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
         $this->assertInstanceOf('\\Direvus\\Decimal\\Decimal', $d);
         $this->assertSame('1', (string) $d);
     }
+
+    /**
+     * @covers \Direvus\Decimal\result_scale
+     * @dataProvider resultScaleProvider
+     */
+    public function testResultScale($a, $b, $scale, $expected){
+        $this->assertSame($expected, \Direvus\Decimal\result_scale(
+            new Decimal($a),
+            new Decimal($b),
+            $scale));
+    }
+
+    public function resultScaleProvider(){
+        return [
+            ['0', '0', null, 0],
+            ['1', '10', null, 0],
+            ['1000', '10', null, 0],
+            ['-10', '10', null, 0],
+            ['10', '-10', null, 0],
+            ['0.1', '1', null, 1],
+            ['0.1', '0.01', null, 2],
+            ['-0.001', '0.01', null, 3],
+            ['0', '0', 3, 3],
+            ['1000', '0.001', 0, 0],
+            ];
+    }
 }
