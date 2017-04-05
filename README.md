@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/direvus/php-decimal.png?branch=master)](https://travis-ci.org/direvus/php-decimal)
+[![codecov](https://codecov.io/gh/direvus/php-decimal/branch/master/graph/badge.svg)](https://codecov.io/gh/direvus/php-decimal)
 
 php-decimal
 ===========
