@@ -1,8 +1,9 @@
 <?php
-include 'decimal.php';
-use Decimal\Decimal as D;
+namespace Direvus\Decimal;
 
-class DecimalTest extends PHPUnit_Framework_TestCase {
+include 'decimal.php';
+
+class DecimalTest extends \PHPUnit\Framework\TestCase {
     private $values = array(
         50,
         -25000,
@@ -13,12 +14,12 @@ class DecimalTest extends PHPUnit_Framework_TestCase {
         '6.22e23');
 
     /**
-     * @covers Decimal\Decimal::__construct
+     * @covers Decimal::__construct
      */
     public function testValidConstructor(){
         foreach($this->values as $value){
-            $d = new D($value);
-            $this->assertInstanceOf('Decimal\\Decimal', $d);
+            $d = new Decimal($value);
+            $this->assertInstanceOf(Decimal::class, $d);
         }
     }
 
@@ -26,12 +27,12 @@ class DecimalTest extends PHPUnit_Framework_TestCase {
      * @expectedException DomainException
      */
     public function testInvalidConstructor(){
-        $d = new D('');
+        $d = new Decimal('');
     }
 
     /**
-     * @covers Decimal\Decimal::__construct
-     * @covers Decimal\Decimal->__toString
+     * @covers Decimal::__construct
+     * @covers Decimal::__toString
      */
     public function testStringOutput(){
         $expect = array(
@@ -44,17 +45,17 @@ class DecimalTest extends PHPUnit_Framework_TestCase {
             '622000000000000000000000');
         $results = array();
         foreach($this->values as $value){
-            $d = new D($value);
+            $d = new Decimal($value);
             $results[] = (string) $d;
         }
         $this->assertEquals($results, $expect);
     }
 
     /**
-     * @covers Decimal\Decimal->quantize
+     * @covers Decimal::quantize
      */
     public function testQuantize(){
-        $d = new D('12.375');
+        $d = new Decimal('12.375');
         $this->assertEquals((string) $d->quantize(3),  '0');
         $this->assertEquals((string) $d->quantize(2),  '0');
         $this->assertEquals((string) $d->quantize(1),  '10');
@@ -66,10 +67,10 @@ class DecimalTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @covers Decimal\Decimal->round
+     * @covers Decimal::round
      */
     public function testRound(){
-        $d = new D('12.375');
+        $d = new Decimal('12.375');
         $this->assertEquals((string) $d->round(-1), '12');
         $this->assertEquals((string) $d->round(0),  '12');
         $this->assertEquals((string) $d->round(1),  '12.4');

@@ -29,8 +29,8 @@ Copy the library file 'decimal.php' to anywhere on your system you like.
 Personally I recommend something like `/usr/local/lib/php-decimal`, but it's
 totally up to you.
 
-In your PHP code, execute `include '/path/to/lib/decimal.php';` and you're
-ready to use the library.
+In your PHP code, execute `include '/path/to/lib/decimal.php';`, or include it
+in your autoloader, and you're ready to use the library.
 
 Usage
 -----
@@ -67,8 +67,9 @@ bcscale that will be appropriate for all circumstances.
 Enter php-decimal:
 
     php > include '/path/to/lib/decimal.php';
+    php > use \Direvus\Decimal\Decimal as Decimal;
     
-    php > $n = new Decimal\Decimal;
+    php > $n = new Decimal;
     php > $n->increase('0.1', '0.1', '0.1', '-0.3');
     php > var_dump((string) $n);
     string(1) "0"

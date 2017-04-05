@@ -14,7 +14,7 @@
  * full text of which is available in the file 'LICENSE' in the top-level 
  * directory of this library.
  */
-namespace Decimal;
+namespace Direvus\Decimal;
 
 const ZERO = '0';
 const EXP_MARK = 'e';
