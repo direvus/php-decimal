@@ -49,6 +49,27 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
+     * @covers \Direvus\Decimal\Decimal::getScale
+     * @dataProvider getScaleProvider
+     */
+    public function testGetScale($input, $expected){
+        $d = new Decimal($input);
+        $this->assertSame($expected, $d->getScale());
+    }
+
+    public function getScaleProvider(){
+        return [
+            [0, 0],
+            [1, 0],
+            [-1, 0],
+            ['12.375', 3],
+            ['-0.7', 1],
+            ['6.22e23', 0],
+            ['1e-10', 10],
+            ];
+    }
+
+    /**
      * @covers \Direvus\Decimal\Decimal::quantize
      * @dataProvider quantizeProvider
      */
