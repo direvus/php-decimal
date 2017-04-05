@@ -8,7 +8,7 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
      * @covers \Direvus\Decimal\Decimal::__toString
      * @dataProvider baseProvider
      */
-    public function testValidConstructor($value, $expected){
+    public function testConstructor($value, $expected){
         $d = new Decimal($value);
         $this->assertInstanceOf('\\Direvus\\Decimal\\Decimal', $d);
         $this->assertSame($expected, (string) $d);
@@ -30,6 +30,8 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
             ['    abc01    ', '1'],
             ['0000005', '5'],
             ['6.22e23', '622000000000000000000000'],
+            [new Decimal('-12.375'), '-12.375'],
+            ['0000', '0'],
             ];
     }
 
