@@ -19,7 +19,7 @@ class DecimalTest extends \PHPUnit_Framework_TestCase {
     public function testValidConstructor(){
         foreach($this->values as $value){
             $d = new Decimal($value);
-            $this->assertInstanceOf(Decimal::class, $d);
+            $this->assertInstanceOf('\\Direvus\\Decimal\\Decimal', $d);
         }
     }
 
