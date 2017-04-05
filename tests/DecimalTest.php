@@ -3,23 +3,15 @@ include 'decimal.php';
 use \Direvus\Decimal\Decimal;
 
 class DecimalTest extends PHPUnit\Framework\TestCase {
-    private $values = array(
-        50,
-        -25000,
-        0.00001,
-        '-5.000067',
-        '    abc01    ',
-        '0000005',
-        '6.22e23');
-
     /**
      * @covers \Direvus\Decimal\Decimal::__construct
+     * @covers \Direvus\Decimal\Decimal::__toString
+     * @dataProvider baseProvider
      */
-    public function testValidConstructor(){
-        foreach($this->values as $value){
-            $d = new Decimal($value);
-            $this->assertInstanceOf('\\Direvus\\Decimal\\Decimal', $d);
-        }
+    public function testValidConstructor($value, $expected){
+        $d = new Decimal($value);
+        $this->assertInstanceOf('\\Direvus\\Decimal\\Decimal', $d);
+        $this->assertSame($expected, (string) $d);
     }
 
     /**
@@ -29,52 +21,57 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
         $d = new Decimal('');
     }
 
-    /**
-     * @covers \Direvus\Decimal\Decimal::__construct
-     * @covers \Direvus\Decimal\Decimal::__toString
-     */
-    public function testStringOutput(){
-        $expect = array(
-            '50',
-            '-25000',
-            '1.0E-5',
-            '-5.000067',
-            '1',
-            '5',
-            '622000000000000000000000');
-        $results = array();
-        foreach($this->values as $value){
-            $d = new Decimal($value);
-            $results[] = (string) $d;
-        }
-        $this->assertEquals($results, $expect);
+    public function baseProvider(){
+        return [
+            [50, '50'],
+            [-25000, '-25000'],
+            [0.00001, '0.00001'],
+            ['-5.000067', '-5.000067'],
+            ['    abc01    ', '1'],
+            ['0000005', '5'],
+            ['6.22e23', '622000000000000000000000'],
+            ];
     }
 
     /**
      * @covers \Direvus\Decimal\Decimal::quantize
+     * @dataProvider quantizeProvider
      */
-    public function testQuantize(){
-        $d = new Decimal('12.375');
-        $this->assertEquals((string) $d->quantize(3),  '0');
-        $this->assertEquals((string) $d->quantize(2),  '0');
-        $this->assertEquals((string) $d->quantize(1),  '10');
-        $this->assertEquals((string) $d->quantize(0),  '12');
-        $this->assertEquals((string) $d->quantize(-1), '12.4');
-        $this->assertEquals((string) $d->quantize(-2), '12.38');
-        $this->assertEquals((string) $d->quantize(-3), '12.375');
-        $this->assertEquals((string) $d->quantize(-4), '12.375');
+    public function testQuantize($input, $exponent, $expected){
+        $d = new Decimal($input);
+        $this->assertSame($expected, (string) $d->quantize($exponent));
+    }
+
+    public function quantizeProvider(){
+        return [
+            ['12.375', 3,  '0'],
+            ['12.375', 2,  '0'],
+            ['12.375', 1,  '10'],
+            ['12.375', 0,  '12'],
+            ['12.375', -1, '12.4'],
+            ['12.375', -2, '12.38'],
+            ['12.375', -3, '12.375'],
+            ['12.375', -4, '12.375'],
+            ];
     }
 
     /**
      * @covers \Direvus\Decimal\Decimal::round
+     * @dataProvider roundProvider
      */
-    public function testRound(){
-        $d = new Decimal('12.375');
-        $this->assertEquals((string) $d->round(-1), '12');
-        $this->assertEquals((string) $d->round(0),  '12');
-        $this->assertEquals((string) $d->round(1),  '12.4');
-        $this->assertEquals((string) $d->round(2),  '12.38');
-        $this->assertEquals((string) $d->round(3),  '12.375');
-        $this->assertEquals((string) $d->round(4),  '12.375');
+    public function testRound($input, $precision, $expected){
+        $d = new Decimal($input);
+        $this->assertSame($expected, (string) $d->round($precision));
+    }
+
+    public function roundProvider(){
+        return [
+            ['12.375', -1, '12'],
+            ['12.375', 0,  '12'],
+            ['12.375', 1,  '12.4'],
+            ['12.375', 2,  '12.38'],
+            ['12.375', 3,  '12.375'],
+            ['12.375', 4,  '12.375'],
+            ];
     }
 }
