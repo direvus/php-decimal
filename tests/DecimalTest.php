@@ -15,7 +15,8 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @expectedException DomainException
+     * @covers \Direvus\Decimal\Decimal::__construct
+     * @expectedException \DomainException
      */
     public function testInvalidConstructor(){
         $d = new Decimal('');
@@ -99,6 +100,46 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
             ['12.375', 3,  '12.375'],
             ['12.375', 4,  '12.375'],
             ];
+    }
+
+    /**
+     * @covers \Direvus\Decimal\make
+     * @dataProvider baseProvider
+     */
+    public function testMake($input, $expected){
+        $d = \Direvus\Decimal\make($input);
+        $this->assertInstanceOf('\\Direvus\\Decimal\\Decimal', $d);
+        $this->assertSame($expected, (string) $d);
+    }
+
+    /**
+     * @covers \Direvus\Decimal\clean_value
+     * @dataProvider cleanProvider
+     */
+    public function testCleanValue($input, $expected){
+        $this->assertSame($expected, \Direvus\Decimal\clean_value($input));
+    }
+
+    public function cleanProvider(){
+        return [
+            ['0', '0'],
+            [0, '0'],
+            [0.2, '0.2'],
+            [-0.1, '-0.1'],
+            ['6.22e23', '6.22e23'],
+            ['6.22 E 23', '6.22E23'],
+            [' 1 ', '1'],
+            ['=1', '1'],
+            ['abc1', '1'],
+            ];
+    }
+
+    /**
+     * @covers \Direvus\Decimal\clean_value
+     * @expectedException \DomainException
+     */
+    public function testCleanValueException(){
+        \Direvus\Decimal\clean_value('not a number');
     }
 
     /**
