@@ -100,4 +100,46 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
             ['12.375', 4,  '12.375'],
             ];
     }
+
+    /**
+     * @covers \Direvus\Decimal\zeroes
+     * @dataProvider zeroesProvider
+     */
+    public function testZeroes($length, $expected){
+        $zeroes = \Direvus\Decimal\zeroes($length);
+        $this->assertSame($expected, $zeroes);
+    }
+
+    public function zeroesProvider(){
+        return [
+            [0, ''],
+            [1, '0'],
+            [2, '00'],
+            [3, '000'],
+            [50, '00000000000000000000000000000000000000000000000000'],
+            ];
+    }
+
+    /**
+     * @covers \Direvus\Decimal\scale_valid
+     * @dataProvider scaleValidProvider
+     */
+    public function testScaleValid($scale, $expected){
+        $valid = \Direvus\Decimal\scale_valid($scale);
+        $this->assertSame($expected, $valid);
+    }
+
+    public function scaleValidProvider(){
+        return [
+            [null, false],
+            [0, true],
+            [1, true],
+            [2, true],
+            [-1, false],
+            [-2, false],
+            [7.5, false],
+            ['', false],
+            [new stdClass, false],
+            ];
+    }
 }

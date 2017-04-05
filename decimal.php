@@ -506,7 +506,7 @@ function min(){
  * Return whether $scale is valid as a decimal operation scale.
  */
 function scale_valid($scale){
-    return (is_int($scale) && $scale > 0);
+    return (is_int($scale) && $scale >= 0);
 }
 
 /*
