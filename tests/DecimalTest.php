@@ -185,6 +185,44 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
+     * @covers \Direvus\Decimal\min
+     * @dataProvider minProvider
+     */
+    public function testMin($args, $expected){
+        $result = call_user_func_array('\\Direvus\\Decimal\\min', $args);
+        $this->assertSame($expected, (string) $result);
+    }
+
+    public function minProvider(){
+        return [
+            [[0, 1, 2], '0'],
+            [[2, 1, 0], '0'],
+            [[1, 0, 2], '0'],
+            [[-5.0, -7.3, -25], '-25'],
+            [[-100, '-1e5', -25], '-100000'],
+            ];
+    }
+
+    /**
+     * @covers \Direvus\Decimal\max
+     * @dataProvider maxProvider
+     */
+    public function testMax($args, $expected){
+        $result = call_user_func_array('\\Direvus\\Decimal\\max', $args);
+        $this->assertSame($expected, (string) $result);
+    }
+
+    public function maxProvider(){
+        return [
+            [[0, 1, 2], '2'],
+            [[2, 1, 0], '2'],
+            [[1, 0, 2], '2'],
+            [[-5.0, -7.3, -25], '-5'],
+            [[100, '1e5', 25], '100000'],
+            ];
+    }
+
+    /**
      * @covers \Direvus\Decimal\zero
      */
     public function testZero(){
