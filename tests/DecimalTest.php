@@ -14,14 +14,6 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
         $this->assertSame($expected, (string) $d);
     }
 
-    /**
-     * @covers \Direvus\Decimal\Decimal::__construct
-     * @expectedException \DomainException
-     */
-    public function testInvalidConstructor(){
-        $d = new Decimal('');
-    }
-
     public function baseProvider(){
         return [
             [50, '50'],
@@ -34,6 +26,26 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
             [new Decimal('-12.375'), '-12.375'],
             ['0000', '0'],
             ];
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::__construct
+     * @expectedException \DomainException
+     */
+    public function testInvalidConstructor(){
+        $d = new Decimal('');
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::copy
+     * @dataProvider baseProvider
+     */
+    public function testCopy($input, $expected){
+        $src = new Decimal($input);
+        $dest = new Decimal;
+        $dest->copy($src);
+        $this->assertTrue($dest->eq($src));
+        $this->assertSame($expected, (string) $dest);
     }
 
     /**
@@ -195,6 +207,8 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
 
     public function minProvider(){
         return [
+            [[], ''],
+            [[1], '1'],
             [[0, 1, 2], '0'],
             [[2, 1, 0], '0'],
             [[1, 0, 2], '0'],
@@ -214,6 +228,8 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
 
     public function maxProvider(){
         return [
+            [[], ''],
+            [[1], '1'],
             [[0, 1, 2], '2'],
             [[2, 1, 0], '2'],
             [[1, 0, 2], '2'],
