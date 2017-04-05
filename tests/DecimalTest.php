@@ -142,4 +142,22 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
             [new stdClass, false],
             ];
     }
+
+    /**
+     * @covers \Direvus\Decimal\zero
+     */
+    public function testZero(){
+        $d = \Direvus\Decimal\zero();
+        $this->assertInstanceOf('\\Direvus\\Decimal\\Decimal', $d);
+        $this->assertSame('0', (string) $d);
+    }
+
+    /**
+     * @covers \Direvus\Decimal\one
+     */
+    public function testOne(){
+        $d = \Direvus\Decimal\one();
+        $this->assertInstanceOf('\\Direvus\\Decimal\\Decimal', $d);
+        $this->assertSame('1', (string) $d);
+    }
 }
