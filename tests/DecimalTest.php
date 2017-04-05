@@ -1,9 +1,8 @@
 <?php
-namespace Direvus\Decimal;
-
 include 'decimal.php';
+use \Direvus\Decimal\Decimal;
 
-class DecimalTest extends \PHPUnit\Framework\TestCase {
+class DecimalTest extends PHPUnit\Framework\TestCase {
     private $values = array(
         50,
         -25000,
@@ -14,7 +13,7 @@ class DecimalTest extends \PHPUnit\Framework\TestCase {
         '6.22e23');
 
     /**
-     * @covers Decimal::__construct
+     * @covers \Direvus\Decimal\Decimal::__construct
      */
     public function testValidConstructor(){
         foreach($this->values as $value){
@@ -31,8 +30,8 @@ class DecimalTest extends \PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @covers Decimal::__construct
-     * @covers Decimal::__toString
+     * @covers \Direvus\Decimal\Decimal::__construct
+     * @covers \Direvus\Decimal\Decimal::__toString
      */
     public function testStringOutput(){
         $expect = array(
@@ -52,7 +51,7 @@ class DecimalTest extends \PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @covers Decimal::quantize
+     * @covers \Direvus\Decimal\Decimal::quantize
      */
     public function testQuantize(){
         $d = new Decimal('12.375');
@@ -67,7 +66,7 @@ class DecimalTest extends \PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @covers Decimal::round
+     * @covers \Direvus\Decimal\Decimal::round
      */
     public function testRound(){
         $d = new Decimal('12.375');
