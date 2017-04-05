@@ -54,6 +54,30 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
             ['12.375', -2, '12.38'],
             ['12.375', -3, '12.375'],
             ['12.375', -4, '12.375'],
+            ['1500', 3, '1500'],
+            ];
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::quantize
+     * @dataProvider quantizeMethodProvider
+     */
+    public function testQuantizeMethod($input, $exponent, $method, $expected){
+        $d = new Decimal($input);
+        $q = $d->quantize($exponent, $method);
+        $this->assertSame($expected, (string) $q);
+    }
+
+    public function quantizeMethodProvider(){
+        return [
+            ['12.375', -2, PHP_ROUND_HALF_UP,   '12.38'],
+            ['12.375', -2, PHP_ROUND_HALF_DOWN, '12.37'],
+            ['12.375', -2, PHP_ROUND_HALF_EVEN, '12.38'],
+            ['12.375', -2, PHP_ROUND_HALF_ODD,  '12.37'],
+            ['-0.05',  -1, PHP_ROUND_HALF_UP,   '-0.1'],
+            ['-0.05',  -1, PHP_ROUND_HALF_DOWN, '0'],
+            ['-0.05',  -1, PHP_ROUND_HALF_EVEN, '0'],
+            ['-0.05',  -1, PHP_ROUND_HALF_ODD,  '-0.1'],
             ];
     }
 

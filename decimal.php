@@ -279,6 +279,7 @@ class Decimal {
         }else{
             $result->digits = ZERO;
             $result->exponent = 0;
+            $result->negative = false;
             return $result;
         }
         $result->digits = rtrim($result->digits, ZERO);
@@ -301,11 +302,16 @@ class Decimal {
             $result->exponent = $exponent;
         }elseif($exponent > $result->exponent){
             if($result->exponent < 0){
-                $last = substr($result->digits, $count, 1);
+                if(strlen($result->digits) <= abs($count)){
+                    $prev_even = true;
+                }else{
+                    $prev = (int) substr($result->digits, $count - 1, 1);
+                    $prev_even = ($prev % 2 == 0);
+                }
                 $roundoff = new Decimal;
                 if($method == PHP_ROUND_HALF_DOWN ||
-                        ($method == PHP_ROUND_HALF_EVEN && ($last % 2 == 0)) ||
-                        ($method == PHP_ROUND_HALF_ODD && ($last % 2 != 0))){
+                        ($method == PHP_ROUND_HALF_EVEN && $prev_even) ||
+                        ($method == PHP_ROUND_HALF_ODD && !$prev_even)){
                     $roundoff->digits = '4';
                 }else{
                     $roundoff->digits = '5';

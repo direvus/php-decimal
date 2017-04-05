@@ -68,7 +68,7 @@ bcscale that will be appropriate for all circumstances.
 Enter php-decimal:
 
     php > include '/path/to/lib/decimal.php';
-    php > use \Direvus\Decimal\Decimal as Decimal;
+    php > use \Direvus\Decimal\Decimal;
     
     php > $n = new Decimal;
     php > $n->increase('0.1', '0.1', '0.1', '-0.3');
