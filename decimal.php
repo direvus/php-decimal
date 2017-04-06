@@ -201,11 +201,16 @@ class Decimal {
         return $this->multiply($value, $scale);
     }
 
-    /*
+    /**
      * Divide this Decimal by $value and return the quotient as a new Decimal.
+     *
+     * @throws \DomainException if $value is zero.
      */
     public function divide($value, $scale=null){
         $decimal = make($value);
+        if($decimal->zero()){
+            throw new \DomainException("Cannot divide by zero.");
+        }
         $scale = result_scale($this, $decimal, $scale);
         return new Decimal(bcdiv($this, $decimal, $scale));
     }

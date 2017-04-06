@@ -342,6 +342,49 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
+     * @covers \Direvus\Decimal\Decimal::div
+     * @covers \Direvus\Decimal\Decimal::divide
+     * @dataProvider divisionProvider
+     */
+    public function testDivide($a, $b, $scale, $expected){
+        $dec = new Decimal($a);
+        $this->assertSame($expected, (string) $dec->div($b, $scale));
+        $this->assertSame($expected, (string) $dec->divide($b, $scale));
+    }
+
+    public function divisionProvider(){
+        return [
+            ['0', '1', null, '0'],
+            ['1', '1', null, '1'],
+            ['0', '1e6', null, '0'],
+            [1, 10, 1, '0.1'],
+            ['1000', '10', null, '100'],
+            ['-10', '10', null, '-1'],
+            ['10', '-10', null, '-1'],
+            ['10', '10', null, '1'],
+            ['0.1', '1', null, '0.1'],
+            ['0.1', '0.01', null, '10'],
+            ['-0.001', '0.01', 1, '-0.1'],
+            ['1', '3', 3, '0.333'],
+            ['1', '3', 0, '0'],
+            ['6.22e23', '2', null, '311000000000000000000000'],
+            ['6.22e23', '-1', null, '-622000000000000000000000'],
+            ['1e-10', 3, null, '0'],
+            ['1e-10', 3, 11, '0.00000000003'],
+            ['1e-10', 3, 12, '0.000000000033'],
+            ];
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::divide
+     * @expectedException \DomainException
+     */
+    public function testDivideByZero(){
+        $dec = new Decimal(1);
+        $dec->divide(0);
+    }
+
+    /**
      * @covers \Direvus\Decimal\Decimal::quantize
      * @dataProvider quantizeProvider
      */
