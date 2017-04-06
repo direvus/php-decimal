@@ -278,9 +278,18 @@ class Decimal {
         return $this->negative;
     }
 
-    /*
-     * Return a new Decimal which represents this value using the minimum 
-     * possible number of digits without any loss of precision.
+    /**
+     * Return a new Decimal which represents this value in its canonical form.
+     *
+     * The canonicla form is the form that uses the minimum possible number of
+     * digits without any loss of precision to the value.
+     *
+     * A zero value will always be returned as a positive Decimal -- it is
+     * possible to represent "negative zero" using a Decimal object, but the
+     * treatment of zero in this library is unsigned, and the canonical
+     * representation of zero is always positive zero.
+     *
+     * @return Decimal
      */
     public function compress(){
         $result = clone $this;

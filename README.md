@@ -106,13 +106,18 @@ Each Decimal value represents the real number *n* such that:
 
     n = [-]digits × (10 ^ exponent)
 
-The number 7500 would be therefore represented internally by the values
-`('75', 2, false)`, respectively, as 7500 = 75 × 10^2.
+The number 7500 would be therefore represented internally by the values `('75',
+2, false)`, respectively, as 7500 = 75 × 10^2, whereas the number -0.75 would
+be represented internally as `('75', -2, true)`, for -75 × 10^-2.
 
 It can be seen that, for every real number which has a finite representation in
 decimal form, there are infinitely many possible Decimal representations, but
 only one representation which uses the minimal number of decimal digits, which
 is called the 'normal' or 'canonical' representation.
+
+It is possible to represent negative zero using a Decimal instance, but in
+effect this library treats zero as unsigned, and the canonical representation
+of zero is positive.
 
 Decimals can be initialised from other Decimal instances, strings describing
 numbers, integers and floats (with the caveat that if you initialise from a
@@ -131,11 +136,11 @@ This library does not comply, nor does it attempt to comply, with the IEEE 754
 standard.
 
 In particular, it does not include any representations of abstract numeric
-concepts like NaN ("Not a Number"), infinity, or negative infinity.  The
-intention of php-decimal is to enable simple, practical arithmetic across the
-real numbers according to the Principle of Least Astonishment.  If you're
-looking to do some integral calculus, php-decimal is probably not the right
-tool for the job.
+concepts like NaN ("Not a Number"), signed zero, infinity, or negative
+infinity.  The intention of php-decimal is to enable simple, practical
+arithmetic across the real numbers according to the Principle of Least
+Astonishment.  If you're looking to do some integral calculus, php-decimal is
+probably not the right tool for the job.
 
 License
 -------
