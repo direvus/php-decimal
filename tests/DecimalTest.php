@@ -308,6 +308,40 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
+     * @covers \Direvus\Decimal\Decimal::mul
+     * @covers \Direvus\Decimal\Decimal::multiply
+     * @dataProvider multiplicationProvider
+     */
+    public function testMultiply($a, $b, $scale, $expected){
+        $dec = new Decimal($a);
+        $this->assertSame($expected, (string) $dec->mul($b, $scale));
+        $this->assertSame($expected, (string) $dec->multiply($b, $scale));
+    }
+
+    public function multiplicationProvider(){
+        return [
+            ['0', '0', null, '0'],
+            ['1', '10', null, '10'],
+            ['1000', '10', null, '10000'],
+            ['-10', '10', null, '-100'],
+            ['10', '-10', null, '-100'],
+            ['10', '10', null, '100'],
+            ['0.1', '1', null, '0.1'],
+            ['0.1', '0.01', null, '0.001'],
+            ['-0.001', '0.01', null, '-0.00001'],
+            ['0', '0', 3, '0'],
+            ['9', '0.001', 3, '0.009'],
+            ['9', '0.001', 0, '0'],
+            ['6.22e23', '2', null, '1244000000000000000000000'],
+            ['6.22e23', '-1', null, '-622000000000000000000000'],
+            ['1e-10', '28', null, '0.0000000028'],
+            ['1e-10', '-1e-10', null, '-0.00000000000000000001'],
+            ['1e-10', '-1e-10', 20, '-0.00000000000000000001'],
+            ['1e-10', '-1e-10', 19, '0'],
+            ];
+    }
+
+    /**
      * @covers \Direvus\Decimal\Decimal::quantize
      * @dataProvider quantizeProvider
      */
