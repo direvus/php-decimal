@@ -26,12 +26,17 @@ convenient, object-oriented, and intuitive API.
 Installation
 ------------
 
-Copy the library file 'decimal.php' to anywhere on your system you like.
-Personally I recommend something like `/usr/local/lib/php-decimal`, but it's
-totally up to you.
+The entire library is included in a single source file for ease of
+installation.  All you need to do is copy the library file 'decimal.php' to
+anywhere on your system you like.  Personally I use something like
+`/usr/local/lib/php-decimal.php`, but it's totally up to you.  For example:
 
-In your PHP code, execute `include '/path/to/lib/decimal.php';`, or include it
-in your autoloader, and you're ready to use the library.
+```
+wget -O /usr/local/lib/php-decimal.php https://github.com/direvus/php-decimal/raw/master/decimal.php
+```
+
+In your PHP code, execute `include '/path/to/lib/php-decimal.php';`, or include
+it in your autoloader, and you're ready to use the library.
 
 Usage
 -----
@@ -122,13 +127,15 @@ leave PHP blissfully agnostic of difficult problems like basic arithmetic.
 Standards
 ---------
 
-This library has some superficial resemblances to the IEEE 854 and 754
-standards, but does not comply, nor does it attempt to comply, with these
-standards.  It would be possible to extend the library into compliance, but at
-this time the author has no intention of doing so.
+This library does not comply, nor does it attempt to comply, with the IEEE 754
+standard.
 
-In particular, php-decimal does not attempt to represent abstract numeric
-concepts like NaN ("Not a Number"), infinity or negative infinity.
+In particular, it does not include any representations of abstract numeric
+concepts like NaN ("Not a Number"), infinity, or negative infinity.  The
+intention of php-decimal is to enable simple, practical arithmetic across the
+real numbers according to the Principle of Least Astonishment.  If you're
+looking to do some integral calculus, php-decimal is probably not the right
+tool for the job.
 
 License
 -------
@@ -149,7 +156,7 @@ This library was heavily inspired by the [decimal][2] module of Python's
 standard library, and the [numeric data type][3] of PostgreSQL.  If any credit
 is due, most of it belongs to the authors of these projects.
 
-  [1]: http://au2.php.net/manual/en/book.bc.php
+  [1]: http://php.net/manual/en/book.bc.php
   [2]: http://docs.python.org/2/library/decimal.html
   [3]: http://www.postgresql.org/docs/current/static/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL
 
