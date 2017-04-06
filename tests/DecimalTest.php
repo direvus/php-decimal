@@ -274,6 +274,40 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
+     * @covers \Direvus\Decimal\Decimal::sub
+     * @covers \Direvus\Decimal\Decimal::subtract
+     * @dataProvider subtractionProvider
+     */
+    public function testSubtract($a, $b, $scale, $expected){
+        $dec = new Decimal($a);
+        $this->assertSame($expected, (string) $dec->sub($b, $scale));
+        $this->assertSame($expected, (string) $dec->subtract($b, $scale));
+    }
+
+    public function subtractionProvider(){
+        return [
+            ['0', '0', null, '0'],
+            ['1', '10', null, '-9'],
+            ['1000', '10', null, '990'],
+            ['-10', '10', null, '-20'],
+            ['10', '-10', null, '20'],
+            ['10', '10', null, '0'],
+            ['0.1', '1', null, '-0.9'],
+            ['0.1', '0.01', null, '0.09'],
+            ['-0.001', '0.01', null, '-0.011'],
+            ['0', '0', 3, '0'],
+            ['1000', '0.001', 3, '999.999'],
+            ['1000', '0.001', 0, '999'],
+            ['6.22e23', '-6.22e23', null, '1244000000000000000000000'],
+            ['6.22e23', '6.22e23', null, '0'],
+            ['1e-10', '1e-10', null, '0'],
+            ['1e-10', '-1e-10', 10, '0.0000000002'],
+            ['-1e-10', '1e-10', 10, '-0.0000000002'],
+            ['1e-10', '-1e-10', 9, '0'],
+            ];
+    }
+
+    /**
      * @covers \Direvus\Decimal\Decimal::quantize
      * @dataProvider quantizeProvider
      */
