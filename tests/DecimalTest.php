@@ -216,11 +216,16 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
 
     /**
      * @covers \Direvus\Decimal\Decimal::negation
+     * @covers \Direvus\Decimal\Decimal::negate
      * @dataProvider negationProvider
      */
     public function testNegation($input, $expected){
         $dec = new Decimal($input);
+        $negative = $dec->negative;
         $this->assertSame($expected, (string) $dec->negation());
+        $dec->negate();
+        $this->assertSame(!$negative, $dec->negative);
+        $this->assertSame($expected, (string) $dec);
     }
 
     public function negationProvider(){
