@@ -190,6 +190,56 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
+     * @covers \Direvus\Decimal\Decimal::abs
+     * @dataProvider absProvider
+     */
+    public function testAbs($input, $expected){
+        $dec = new Decimal($input);
+        $this->assertSame($expected, (string) $dec->abs());
+    }
+
+    public function absProvider(){
+        return [
+            [0, '0'],
+            [1, '1'],
+            [-1, '1'],
+            ['12.375', '12.375'],
+            ['-12.375', '12.375'],
+            [-0.7, '0.7'],
+            [0.7, '0.7'],
+            ['6.22e23', '622000000000000000000000'],
+            ['-6.22e23', '622000000000000000000000'],
+            ['1e-10', '0.0000000001'],
+            ['-1e-10', '0.0000000001'],
+            ];
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::negation
+     * @dataProvider negationProvider
+     */
+    public function testNegation($input, $expected){
+        $dec = new Decimal($input);
+        $this->assertSame($expected, (string) $dec->negation());
+    }
+
+    public function negationProvider(){
+        return [
+            [0, '0'],
+            [1, '-1'],
+            [-1, '1'],
+            ['12.375', '-12.375'],
+            ['-12.375', '12.375'],
+            [-0.7, '0.7'],
+            [0.7, '-0.7'],
+            ['6.22e23', '-622000000000000000000000'],
+            ['-6.22e23', '622000000000000000000000'],
+            ['1e-10', '-0.0000000001'],
+            ['-1e-10', '0.0000000001'],
+            ];
+    }
+
+    /**
      * @covers \Direvus\Decimal\Decimal::quantize
      * @dataProvider quantizeProvider
      */
