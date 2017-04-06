@@ -2,6 +2,9 @@
 include 'decimal.php';
 use \Direvus\Decimal\Decimal;
 
+/**
+ * @covers \Direvus\Decimal\Decimal
+ */
 class DecimalTest extends PHPUnit\Framework\TestCase {
     /**
      * @covers \Direvus\Decimal\Decimal::__construct
@@ -67,6 +70,123 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
             ['6.22e23', 0],
             ['1e-10', 10],
             ];
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::compare
+     * @dataProvider compareProvider
+     */
+    public function testCompare($a, $b, $expected){
+        $dec = new Decimal($a);
+        $this->assertSame($expected, $dec->compare($b));
+    }
+
+    public function compareProvider(){
+        return [
+            [0, 0, 0],
+            [1, 0, 1],
+            [-1, 0, -1],
+            ['12.375', '12.375', 0],
+            ['12.374', '12.375', -1],
+            ['12.376', '12.375', 1],
+            ['6.22e23', '6.22e23', 0],
+            ['1e-10', '1e-9', -1],
+            ];
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::equals
+     * @covers \Direvus\Decimal\Decimal::eq
+     * @dataProvider compareProvider
+     */
+    public function testEquals($a, $b, $expected){
+        $dec = new Decimal($a);
+        $this->assertSame($expected == 0, $dec->equals($b));
+        $this->assertSame($expected == 0, $dec->eq($b));
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::greaterThan
+     * @covers \Direvus\Decimal\Decimal::gt
+     * @dataProvider compareProvider
+     */
+    public function testGreaterThan($a, $b, $expected){
+        $dec = new Decimal($a);
+        $this->assertSame($expected > 0, $dec->greaterThan($b));
+        $this->assertSame($expected > 0, $dec->gt($b));
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::lessThan
+     * @covers \Direvus\Decimal\Decimal::lt
+     * @dataProvider compareProvider
+     */
+    public function testLessThan($a, $b, $expected){
+        $dec = new Decimal($a);
+        $this->assertSame($expected < 0, $dec->lessThan($b));
+        $this->assertSame($expected < 0, $dec->lt($b));
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::ge
+     * @dataProvider compareProvider
+     */
+    public function testGreaterEqual($a, $b, $expected){
+        $dec = new Decimal($a);
+        $this->assertSame($expected >= 0, $dec->ge($b));
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::le
+     * @dataProvider compareProvider
+     */
+    public function testLessEqual($a, $b, $expected){
+        $dec = new Decimal($a);
+        $this->assertSame($expected <= 0, $dec->le($b));
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::zero
+     * @dataProvider compareZeroProvider
+     */
+    public function testZero($input, $expected){
+        $dec = new Decimal($input);
+        $this->assertSame($expected == 0, $dec->zero());
+    }
+
+    public function compareZeroProvider(){
+        return [
+            [0, 0],
+            [1, 1],
+            [-1, -1],
+            [0.0, 0],
+            ['0', 0],
+            ['1', 1],
+            ['-1', -1],
+            ['00000', 0],
+            ['  0.0   ', 0],
+            ['0.00001', 1],
+            ['1e-20', 1],
+            ['-1e-20', -1],
+            ];
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::positive
+     * @dataProvider compareZeroProvider
+     */
+    public function testPositive($input, $expected){
+        $dec = new Decimal($input);
+        $this->assertSame($expected > 0, $dec->positive());
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::negative
+     * @dataProvider compareZeroProvider
+     */
+    public function testNegative($input, $expected){
+        $dec = new Decimal($input);
+        $this->assertSame($expected < 0, $dec->negative());
     }
 
     /**
@@ -262,7 +382,7 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     /**
      * @covers \Direvus\Decimal\zero
      */
-    public function testZero(){
+    public function testZeroFunction(){
         $d = \Direvus\Decimal\zero();
         $this->assertInstanceOf('\\Direvus\\Decimal\\Decimal', $d);
         $this->assertSame('0', (string) $d);
