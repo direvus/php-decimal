@@ -234,15 +234,15 @@ class Decimal {
     }
 
     /*
-     * Increase/decrease this Decimal in-place by the given argument(s).
+     * Increase this Decimal in-place by the given argument(s).
      *
-     * Iterable arguments are processed recursively.
+     * Traversable arguments are processed recursively.
      */
     public function increase(){
         $args = func_get_args();
         foreach($args as $arg){
-            if(is_array($arg) || $arg instanceof Traversable){
-                foreach($args as $element){
+            if(is_array($arg) || $arg instanceof \Traversable){
+                foreach($arg as $element){
                     $this->increase($element);
                 }
             }else{
@@ -251,11 +251,16 @@ class Decimal {
         }
     }
 
-    public function decrease($value){
+    /*
+     * Decrease this Decimal in-place by the given argument(s).
+     *
+     * Traversable arguments are processed recursively.
+     */
+    public function decrease(){
         $args = func_get_args();
         foreach($args as $arg){
-            if(is_array($arg) || $arg instanceof Traversable){
-                foreach($args as $element){
+            if(is_array($arg) || $arg instanceof \Traversable){
+                foreach($arg as $element){
                     $this->decrease($element);
                 }
             }else{

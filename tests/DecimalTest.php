@@ -406,6 +406,60 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
+     * @covers \Direvus\Decimal\Decimal::increase
+     * @dataProvider increaseProvider
+     */
+    public function testIncrease($input, $args, $expected){
+        $dec = new Decimal($input);
+        call_user_func_array([$dec, 'increase'], $args);
+        $this->assertSame($expected, (string) $dec);
+    }
+
+    public function increaseProvider(){
+        return [
+            [0, [], '0'],
+            [1, [], '1'],
+            [1, [0], '1'],
+            [1, [0, 0, 0], '1'],
+            [1, [1, 0, 1], '3'],
+            [1, [[1, 0, 3]], '5'],
+            [1, [[1, 0, 3], '0.1'], '5.1'],
+            [1, [[1, 0, 3], ['0.1', '0.01']], '5.11'],
+            [1, [-1], '0'],
+            [0, ['0.1', '0.1', '0.1', '-0.3'], '0'],
+            ['6.22e23', [1], '622000000000000000000001'],
+            ['6.22e23', [-1], '621999999999999999999999'],
+            ];
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::decrease
+     * @dataProvider decreaseProvider
+     */
+    public function testDecrease($input, $args, $expected){
+        $dec = new Decimal($input);
+        call_user_func_array([$dec, 'decrease'], $args);
+        $this->assertSame($expected, (string) $dec);
+    }
+
+    public function decreaseProvider(){
+        return [
+            [0, [], '0'],
+            [1, [], '1'],
+            [1, [0], '1'],
+            [1, [0, 0, 0], '1'],
+            [1, [1, 0, 1], '-1'],
+            [1, [[1, 0, 3]], '-3'],
+            [1, [[1, 0, 3], '0.1'], '-3.1'],
+            [1, [[1, 0, 3], ['0.1', '0.01']], '-3.11'],
+            [1, [-1], '2'],
+            [0, ['0.1', '0.1', '0.1', '-0.3'], '0'],
+            ['6.22e23', [1], '621999999999999999999999'],
+            ['6.22e23', [-1], '622000000000000000000001'],
+            ];
+    }
+
+    /**
      * @covers \Direvus\Decimal\Decimal::divide
      * @expectedException \DomainException
      */
