@@ -1,5 +1,5 @@
 <?php
-include 'decimal.php';
+require_once('decimal.php');
 use \Direvus\Decimal\Decimal;
 
 /**
