@@ -368,6 +368,16 @@ class Decimal {
         return self::$raw_formatter->format($this);
     }
 
+    /**
+     * Return some approximation of this Decimal as a PHP native float.
+     *
+     * Due to the nature of binary floating-point, some valid values of Decimal
+     * will not have any finite representation as a float, and some valid
+     * values of Decimal will be out of the range handled by floats.  You have
+     * been warned.
+     *
+     * @return float
+     */
     public function toFloat(){
         return (float) (string) $this;
     }

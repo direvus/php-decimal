@@ -574,6 +574,33 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
+     * @covers \Direvus\Decimal\Decimal::toFloat
+     * @dataProvider toFloatProvider
+     */
+    public function testToFloat($input, $expected){
+        $d = new Decimal($input);
+        $result = $d->toFloat();
+        $this->assertInternalType('float', $result);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function toFloatProvider(){
+        return [
+            [0, 0.0],
+            [1, 1.0],
+            [-1, -1.0],
+            ['12.375', 12.375],
+            [-0.7, -0.7],
+            [0.7, 0.7],
+            ['6.22e23', 622000000000000000000000.0],
+            ['-6.22e23', -622000000000000000000000.0],
+            ['1e-10', 0.0000000001],
+            ['-1e-10', -0.0000000001],
+            ['1e100', 10.0 ** 100],
+            ];
+    }
+
+    /**
      * @covers \Direvus\Decimal\make
      * @dataProvider baseProvider
      */
