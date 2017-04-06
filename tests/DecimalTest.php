@@ -376,12 +376,51 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
+     * @covers \Direvus\Decimal\Decimal::inverse
+     * @dataProvider inverseProvider
+     */
+    public function testInverse($input, $scale, $expected){
+        $dec = new Decimal($input);
+        $this->assertSame($expected, (string) $dec->inverse($scale));
+    }
+
+    public function inverseProvider(){
+        return [
+            [1, null, '1'],
+            [-1, null, '-1'],
+            [2, null, '0.5'],
+            [1000, null, '0.001'],
+            ['-10', null, '-0.1'],
+            ['10', null, '0.1'],
+            ['10', 0, '0'],
+            ['0.1', null, '10'],
+            ['-0.001', null, '-1000'],
+            [3, 3, '0.333'],
+            [3, 0, '0'],
+            [6, 4, '0.1666'],
+            [6, 3, '0.166'],
+            [6, 2, '0.16'],
+            [6, 1, '0.1'],
+            ['6.22e23', 30, '0.000000000000000000000001607717'],
+            ];
+    }
+
+    /**
      * @covers \Direvus\Decimal\Decimal::divide
      * @expectedException \DomainException
      */
     public function testDivideByZero(){
         $dec = new Decimal(1);
         $dec->divide(0);
+    }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::inverse
+     * @expectedException \DomainException
+     */
+    public function testInvertZero(){
+        $dec = new Decimal(0);
+        $dec->inverse();
     }
 
     /**

@@ -221,10 +221,13 @@ class Decimal {
 
     /*
      * Return the inverse (1/x) of this Decimal as a new Decimal.
+     *
+     * The default scale of the division will be equal to the exponent of this
+     * Decimal plus one, if it is positive, otherwise it will be zero.
      */
     public function inverse($scale=null){
         if(!scale_valid($scale)){
-            $scale = $this->getScale();
+            $scale = \max(0, $this->exponent + 1);
         }
         $num = one();
         return $num->divide($this, $scale);
