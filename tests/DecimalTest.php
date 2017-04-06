@@ -376,6 +376,15 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
+     * @covers \Direvus\Decimal\Decimal::divide
+     * @expectedException \DomainException
+     */
+    public function testDivideByZero(){
+        $dec = new Decimal(1);
+        $dec->divide(0);
+    }
+
+    /**
      * @covers \Direvus\Decimal\Decimal::inverse
      * @dataProvider inverseProvider
      */
@@ -404,6 +413,16 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
             ['6.22e23', 30, '0.000000000000000000000001607717'],
             ];
     }
+
+    /**
+     * @covers \Direvus\Decimal\Decimal::inverse
+     * @expectedException \DomainException
+     */
+    public function testInvertZero(){
+        $dec = new Decimal(0);
+        $dec->inverse();
+    }
+
 
     /**
      * @covers \Direvus\Decimal\Decimal::increase
@@ -460,23 +479,34 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @covers \Direvus\Decimal\Decimal::divide
-     * @expectedException \DomainException
+     * @covers \Direvus\Decimal\Decimal::compress
+     * @dataProvider compressProvider
      */
-    public function testDivideByZero(){
-        $dec = new Decimal(1);
-        $dec->divide(0);
+    public function testCompress($input, $expected){
+        $d = new Decimal;
+        list($d->digits, $d->exponent, $d->negative) = $input;
+
+        $d = $d->compress();
+        $this->assertSame($expected, [$d->digits, $d->exponent, $d->negative]);
     }
 
-    /**
-     * @covers \Direvus\Decimal\Decimal::inverse
-     * @expectedException \DomainException
-     */
-    public function testInvertZero(){
-        $dec = new Decimal(0);
-        $dec->inverse();
+    public function compressProvider(){
+        return [
+            [['0', 0, false], ['0', 0, false]],
+            [['0', 1, false], ['0', 0, false]],
+            [['0', 0, true],  ['0', 0, false]],
+            [['00000000', 0, false], ['0', 0, false]],
+            [['75', 2, false], ['75', 2, false]],
+            [['750', 1, false], ['75', 2, false]],
+            [['7500', 0, false], ['75', 2, false]],
+            [['75000', -1, false], ['75', 2, false]],
+            [['001', -8, true], ['1', -10, true]],
+            [['01', -9, true], ['1', -10, true]],
+            [['1', -10, true], ['1', -10, true]],
+            [['10', -11, true], ['1', -10, true]],
+            [['100', -12, true], ['1', -10, true]],
+            ];
     }
-
     /**
      * @covers \Direvus\Decimal\Decimal::quantize
      * @dataProvider quantizeProvider
