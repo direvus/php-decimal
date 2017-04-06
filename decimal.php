@@ -382,6 +382,19 @@ class Decimal {
         return (float) (string) $this;
     }
 
+    /**
+     * Return this Decimal formatted as a string.
+     *
+     * @param int $places Number of fractional digits to show.
+     *         The value will be rounded as necessary to accomodate this
+     *         setting, using the default rounding method.  If $places is null,
+     *         the result will use as many places as required to show the value
+     *         in full.
+     * @param string $grouping String to use as a thousands separator.
+     * @param string $radix_mark String to separate the integer part from
+     *         the fractional part, also known as a 'decimal point'.
+     * @return string
+     */
     public function format($places=null, $grouping='', $radix_mark=RADIX_MARK){
         $f = new Formatter($places, $grouping, $radix_mark);
         return $f->format($this);

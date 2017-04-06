@@ -601,6 +601,41 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
+     * @covers \Direvus\Decimal\Decimal::format
+     * @dataProvider formatProvider
+     */
+    public function testFormat($input, $format_args, $expected){
+        $d = new Decimal($input);
+        $result = call_user_func_array([$d, 'format'], $format_args);
+        $this->assertSame($expected, $result);
+    }
+
+    public function formatProvider(){
+        return [
+            [0, [], '0'],
+            [1, [], '1'],
+            [-1, [], '-1'],
+            ['12.375', [], '12.375'],
+            ['12.375', [4], '12.3750'],
+            ['12.375', [3], '12.375'],
+            ['12.375', [2], '12.38'],
+            ['12.375', [1], '12.4'],
+            ['12.375', [0], '12'],
+            [-0.7, [null], '-0.7'],
+            [0.7, [0], '1'],
+            ['6.22e23', [null], '622000000000000000000000'],
+            ['6.22e23', [null, ','], '622,000,000,000,000,000,000,000'],
+            ['6.22e23', [null, ' '], '622 000 000 000 000 000 000 000'],
+            ['6.22e23', [2, ','], '622,000,000,000,000,000,000,000.00'],
+            ['6.22e23', [2, '.', ','], '622.000.000.000.000.000.000.000,00'],
+            ['-6.22e23', [null, ','], '-622,000,000,000,000,000,000,000'],
+            ['1e-10', [], '0.0000000001'],
+            ['-1e-10', [], '-0.0000000001'],
+            ['-1e-10', [9], '-0.000000000'],
+            ];
+    }
+
+    /**
      * @covers \Direvus\Decimal\make
      * @dataProvider baseProvider
      */
