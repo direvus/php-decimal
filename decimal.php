@@ -284,7 +284,7 @@ class Decimal {
     /**
      * Return a new Decimal which represents this value in its canonical form.
      *
-     * The canonicla form is the form that uses the minimum possible number of
+     * The canonical form is the form that uses the minimum possible number of
      * digits without any loss of precision to the value.
      *
      * A zero value will always be returned as a positive Decimal -- it is
