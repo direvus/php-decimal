@@ -1,0 +1,8 @@
+title: php-decimal
+description: An arbitrary-precision decimal library for PHP
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-minimal
+
+gems:
+  - jekyll-mentions
