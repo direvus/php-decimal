@@ -24,13 +24,16 @@ class Decimal {
     public $digits;
     public $exponent = 0;
     public $negative = false;
+
     public static $raw_formatter;
+    public static $zero;
+    public static $one;
 
     public function __construct($value=0){
         if($value instanceof Decimal){
             $this->copy($value);
         }else{
-            $clean = clean_value($value);
+            $clean = self::cleanValue($value);
             if($clean[0] == '-'){
                 $this->negative = true;
                 $clean = substr($clean, 1);
@@ -96,7 +99,7 @@ class Decimal {
      *     1  if the instance is greater than the given value.
      */
     public function compare($value){
-        $decimal = make($value);
+        $decimal = self::make($value);
         $scale = \max($this->getScale(), $decimal->getScale());
         return bccomp($this, $decimal, $scale);
     }
@@ -113,7 +116,7 @@ class Decimal {
         return ($this->compare($value) < 0);
     }
 
-    public function zero(){
+    public function isZero(){
         return $this->equals(0);
     }
 
@@ -167,8 +170,8 @@ class Decimal {
      * Add $value to this Decimal and return the sum as a new Decimal.
      */
     public function add($value, $scale=null){
-        $decimal = make($value);
-        $scale = result_scale($this, $decimal, $scale);
+        $decimal = self::make($value);
+        $scale = self::resultScale($this, $decimal, $scale);
         return new Decimal(bcadd($this, $decimal, $scale));
     }
 
@@ -177,8 +180,8 @@ class Decimal {
      * Decimal.
      */
     public function subtract($value, $scale=null){
-        $decimal = make($value);
-        $scale = result_scale($this, $decimal, $scale);
+        $decimal = self::make($value);
+        $scale = self::resultScale($this, $decimal, $scale);
         return new Decimal(bcsub($this, $decimal, $scale));
     }
 
@@ -190,8 +193,8 @@ class Decimal {
      * Multiply this Decimal by $value and return the product as a new Decimal.
      */
     public function multiply($value, $scale=null){
-        $decimal = make($value);
-        if(!scale_valid($scale)){
+        $decimal = self::make($value);
+        if(!self::scaleValid($scale)){
             $scale = $this->getScale() + $decimal->getScale();
         }
         return new Decimal(bcmul($this, $decimal, $scale));
@@ -207,11 +210,11 @@ class Decimal {
      * @throws \DomainException if $value is zero.
      */
     public function divide($value, $scale=null){
-        $decimal = make($value);
-        if($decimal->zero()){
+        $decimal = self::make($value);
+        if($decimal->isZero()){
             throw new \DomainException("Cannot divide by zero.");
         }
-        $scale = result_scale($this, $decimal, $scale);
+        $scale = self::resultScale($this, $decimal, $scale);
         return new Decimal(bcdiv($this, $decimal, $scale));
     }
 
@@ -226,10 +229,10 @@ class Decimal {
      * Decimal plus one, if it is positive, otherwise it will be zero.
      */
     public function inverse($scale=null){
-        if(!scale_valid($scale)){
+        if(!self::scaleValid($scale)){
             $scale = \max(0, $this->exponent + 1);
         }
-        $num = one();
+        $num = self::one();
         return $num->divide($this, $scale);
     }
 
@@ -320,7 +323,7 @@ class Decimal {
         $result = $this->compress();
         $count = $result->exponent - $exponent;
         if($exponent < $result->exponent){
-            $result->digits .= zeroes($count);
+            $result->digits .= self::zeroes($count);
             $result->exponent = $exponent;
         }elseif($exponent > $result->exponent){
             if($result->exponent < 0){
@@ -346,7 +349,7 @@ class Decimal {
                     $result->digits = ZERO;
                 }
             }else{
-                $result->digits = zeroes(-$count) . $result->digits;
+                $result->digits = self::zeroes(-$count) . $result->digits;
             }
             $result->exponent = $exponent;
         }
@@ -399,6 +402,154 @@ class Decimal {
         $f = new Formatter($places, $grouping, $radix_mark);
         return $f->format($this);
     }
+
+    /**
+     * Return a Decimal instance from the given value.
+     *
+     * If the value is already a Decimal instance, then return it unmodified.
+     * Otherwise, create a new Decimal instance from the given value and return
+     * it.
+     *
+     * @param mixed $value
+     * @return Decimal
+     */
+    public static function make($value){
+        if($value instanceof Decimal){
+            return $value;
+        }else{
+            return new Decimal($value);
+        }
+    }
+
+    /**
+     * Return the given number as a string with irrelevant characters removed.
+     *
+     * All characters other than digits, hyphen, the radix marker and the
+     * exponent marker are removed entirely.
+     *
+     * @param mixed $value
+     * @return string
+     * @throw \DomainException if the value is not a valid numeric
+     *         representation.
+     */
+    public static function cleanValue($value){
+        if(is_int($value) || is_float($value)){
+            return (string) $value;
+        }else{
+            $chars = '\d' . RADIX_MARK . EXP_MARK . '-';
+            $clean = preg_replace("/[^$chars]/i", '', $value);
+            $clean = rtrim($clean, RADIX_MARK);
+            $pattern = '/^-?\d+(?:[' . RADIX_MARK . ']\d*)?(?:' .
+                    EXP_MARK . '-?\d*)?$/i';
+            if(!preg_match($pattern, $clean)){
+                throw new \DomainException(
+                    "Invalid Decimal value '$value'; " .
+                    "must contain at least one digit, optionally preceeded " .
+                    "by a sign specifier, optionally followed by " .
+                    RADIX_MARK . " and a fractional part, optionally followed " .
+                    "by " . EXP_MARK . " and an integer exponent.");
+            }
+            return $clean;
+        }
+    }
+
+    /**
+     * Return the greatest of the arguments.
+     *
+     * @param mixed,...
+     * @return Decimal
+     */
+    public static function max(){
+        $args = func_get_args();
+        $result = null;
+        foreach($args as $arg){
+            $dec = self::make($arg);
+            if($result === null || $result->lt($dec)){
+                $result = $dec;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Return the least of the arguments.
+     *
+     * @param mixed,...
+     * @return Decimal
+     */
+    public static function min(){
+        $args = func_get_args();
+        $result = null;
+        foreach($args as $arg){
+            $dec = self::make($arg);
+            if($result === null || $result->gt($dec)){
+                $result = $dec;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Return whether $scale is valid as a decimal operation scale.
+     *
+     * @param int $scale
+     * @return bool
+     */
+    public static function scaleValid($scale){
+        return (is_int($scale) && $scale >= 0);
+    }
+
+    /**
+     * Return zero as a Decimal.
+     *
+     * @return Decimal
+     */
+    public static function zero(){
+        if(!self::$zero instanceof Decimal){
+            self::$zero = new Decimal(0);
+        }
+        return self::$zero;
+    }
+
+    /**
+     * Return the value one as a Decimal.
+     *
+     * @return Decimal
+     */
+    public static function one(){
+        if(!self::$one instanceof Decimal){
+            self::$one = new Decimal(1);
+        }
+        return self::$one;
+    }
+
+    /*
+     * Return an appropriate scale for an arithmetic operation on two Decimals.
+     *
+     * If $scale is specified and is a valid positive integer, return it.
+     * Otherwise, return the higher of the scales of the operands.
+     *
+     * @param Decimal $a
+     * @param Decimal $b
+     * @param int|null $scale
+     * @return int
+     */
+    public static function resultScale(Decimal $a, Decimal $b, $scale=null){
+        if(!self::scaleValid($scale)){
+            $scale = \max($a->getScale(), $b->getScale());
+        }
+        return $scale;
+    }
+
+    /**
+     * Return a string of zeroes of length $length.
+     *
+     * @param int $length
+     * @return string
+     */
+    public static function zeroes($length){
+        return \str_repeat(ZERO, $length);
+    }
 }
 
 class Formatter {
@@ -426,7 +577,7 @@ class Formatter {
             $decimal = $decimal->round($this->places);
         }
         if($decimal->exponent >= 0){
-            $fill = zeroes($decimal->exponent);
+            $fill = Decimal::zeroes($decimal->exponent);
             $intpart = $decimal->digits . $fill;
             $fracpart = '';
         }else{
@@ -435,7 +586,7 @@ class Formatter {
             $len = strlen($fracpart);
             $scale = $decimal->getScale();
             if($len < $scale){
-                $fracpart = zeroes($scale - $len) . $fracpart;
+                $fracpart = Decimal::zeroes($scale - $len) . $fracpart;
             }
         }
         if($intpart == ''){
@@ -471,125 +622,5 @@ class GroupedMoneyFormatter extends MoneyFormatter {
             $places=2, $grouping=',', $radix_mark=RADIX_MARK){
         parent::__construct($places, $grouping, $radix_mark);
     }
-}
-
-/*
- * Return a Decimal instance from the given value.
- *
- * If the value is already a Decimal instance, then return it unmodified.  
- * Otherwise, create a new Decimal instance from the given value and return it.
- */
-function make($value){
-    if($value instanceof Decimal){
-        return $value;
-    }else{
-        return new Decimal($value);
-    }
-}
-
-/*
- * Return the given number as a string with irrelevant characters removed.
- *
- * All characters other than digits, hyphen, the radix marker and the exponent 
- * marker are removed entirely.
- *
- * Raise an Exception if the value is not a valid numeric representation.  We 
- * make no attempt to interpret exponential notation.
- */ 
-function clean_value($value){
-    if(is_int($value) || is_float($value)){
-        return (string) $value;
-    }else{
-        $chars = '\d' . RADIX_MARK . EXP_MARK . '-';
-        $clean = preg_replace("/[^$chars]/i", '', $value);
-        $clean = rtrim($clean, RADIX_MARK);
-        $pattern = '/^-?\d+(?:[' . RADIX_MARK . ']\d*)?(?:' .
-                EXP_MARK . '-?\d*)?$/i';
-        if(!preg_match($pattern, $clean)){
-            throw new \DomainException(
-                "Invalid Decimal value '$value'; " .
-                "must contain at least one digit, optionally preceeded " .
-                "by a sign specifier, optionally followed by " .
-                RADIX_MARK . " and a fractional part, optionally followed " .
-                "by " . EXP_MARK . " and an integer exponent.");
-        }
-        return $clean;
-    }
-}
-
-/*
- * Return the greatest of the arguments.
- */
-function max(){
-    $args = func_get_args();
-    $result = null;
-    foreach($args as $arg){
-        $dec = make($arg);
-        if($result === null || $result->lt($dec)){
-            $result = $dec;
-        }
-    }
-    return $result;
-}
-
-/*
- * Return the lowest of the arguments.
- */
-function min(){
-    $args = func_get_args();
-    $result = null;
-    foreach($args as $arg){
-        $dec = make($arg);
-        if($result === null || $result->gt($dec)){
-            $result = $dec;
-        }
-    }
-    return $result;
-}
-
-/*
- * Return whether $scale is valid as a decimal operation scale.
- */
-function scale_valid($scale){
-    return (is_int($scale) && $scale >= 0);
-}
-
-/*
- * Return basic values as Decimal.
- */
-function zero(){
-    global $_decimal_zero;
-    if(!$_decimal_zero instanceof Decimal){
-        $_decimal_zero = new Decimal(0);
-    }
-    return $_decimal_zero;
-}
-
-function one(){
-    global $_decimal_one;
-    if(!$_decimal_one instanceof Decimal){
-        $_decimal_one = new Decimal(1);
-    }
-    return $_decimal_one;
-}
-
-/*
- * Return an appropriate scale for an arithmetic operation on two Decimals.
- *
- * If $scale is specified and is a valid positive integer, return it.  
- * Otherwise, return the higher of the scales of the operands.
- */
-function result_scale(Decimal $a, Decimal $b, $scale=null){
-    if(!scale_valid($scale)){
-        $scale = \max($a->getScale(), $b->getScale());
-    }
-    return $scale;
-}
-
-/*
- * Return a string of zeroes of length $length.
- */
-function zeroes($length){
-    return str_repeat(ZERO, $length);
 }
 ?>

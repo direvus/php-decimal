@@ -80,7 +80,7 @@ Enter php-decimal:
     php > var_dump((string) $n);
     string(1) "0"
     
-    php > var_dump($n->zero());
+    php > var_dump($n->isZero());
     bool(true)
 
 We didn't have to lock php-decimal into any particular precision for its

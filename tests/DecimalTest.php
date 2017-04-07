@@ -149,9 +149,9 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
      * @covers \Direvus\Decimal\Decimal::zero
      * @dataProvider compareZeroProvider
      */
-    public function testZero($input, $expected){
+    public function testIsZero($input, $expected){
         $dec = new Decimal($input);
-        $this->assertSame($expected == 0, $dec->zero());
+        $this->assertSame($expected == 0, $dec->isZero());
     }
 
     public function compareZeroProvider(){
@@ -636,21 +636,21 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @covers \Direvus\Decimal\make
+     * @covers \Direvus\Decimal\Decimal::make
      * @dataProvider baseProvider
      */
     public function testMake($input, $expected){
-        $d = \Direvus\Decimal\make($input);
+        $d = Decimal::make($input);
         $this->assertInstanceOf('\\Direvus\\Decimal\\Decimal', $d);
         $this->assertSame($expected, (string) $d);
     }
 
     /**
-     * @covers \Direvus\Decimal\clean_value
+     * @covers \Direvus\Decimal\Decimal::cleanValue
      * @dataProvider cleanProvider
      */
     public function testCleanValue($input, $expected){
-        $this->assertSame($expected, \Direvus\Decimal\clean_value($input));
+        $this->assertSame($expected, Decimal::cleanValue($input));
     }
 
     public function cleanProvider(){
@@ -668,19 +668,19 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @covers \Direvus\Decimal\clean_value
+     * @covers \Direvus\Decimal\Decimal::cleanValue
      * @expectedException \DomainException
      */
     public function testCleanValueException(){
-        \Direvus\Decimal\clean_value('not a number');
+        Decimal::cleanValue('not a number');
     }
 
     /**
-     * @covers \Direvus\Decimal\zeroes
+     * @covers \Direvus\Decimal\Decimal::zeroes
      * @dataProvider zeroesProvider
      */
     public function testZeroes($length, $expected){
-        $zeroes = \Direvus\Decimal\zeroes($length);
+        $zeroes = Decimal::zeroes($length);
         $this->assertSame($expected, $zeroes);
     }
 
@@ -695,11 +695,11 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @covers \Direvus\Decimal\scale_valid
+     * @covers \Direvus\Decimal\Decimal::scaleValid
      * @dataProvider scaleValidProvider
      */
     public function testScaleValid($scale, $expected){
-        $valid = \Direvus\Decimal\scale_valid($scale);
+        $valid = Decimal::scaleValid($scale);
         $this->assertSame($expected, $valid);
     }
 
@@ -718,11 +718,12 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @covers \Direvus\Decimal\min
+     * @covers \Direvus\Decimal\Decimal::min
      * @dataProvider minProvider
      */
     public function testMin($args, $expected){
-        $result = call_user_func_array('\\Direvus\\Decimal\\min', $args);
+        $func = ['\\Direvus\\Decimal\\Decimal', 'min'];
+        $result = call_user_func_array($func, $args);
         $this->assertSame($expected, (string) $result);
     }
 
@@ -739,11 +740,12 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @covers \Direvus\Decimal\max
+     * @covers \Direvus\Decimal\Decimal::max
      * @dataProvider maxProvider
      */
     public function testMax($args, $expected){
-        $result = call_user_func_array('\\Direvus\\Decimal\\max', $args);
+        $func = ['\\Direvus\\Decimal\\Decimal', 'max'];
+        $result = call_user_func_array($func, $args);
         $this->assertSame($expected, (string) $result);
     }
 
@@ -760,29 +762,29 @@ class DecimalTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @covers \Direvus\Decimal\zero
+     * @covers \Direvus\Decimal\Decimal::zero
      */
     public function testZeroFunction(){
-        $d = \Direvus\Decimal\zero();
+        $d = Decimal::zero();
         $this->assertInstanceOf('\\Direvus\\Decimal\\Decimal', $d);
         $this->assertSame('0', (string) $d);
     }
 
     /**
-     * @covers \Direvus\Decimal\one
+     * @covers \Direvus\Decimal\Decimal::one
      */
     public function testOne(){
-        $d = \Direvus\Decimal\one();
+        $d = Decimal::one();
         $this->assertInstanceOf('\\Direvus\\Decimal\\Decimal', $d);
         $this->assertSame('1', (string) $d);
     }
 
     /**
-     * @covers \Direvus\Decimal\result_scale
+     * @covers \Direvus\Decimal\Decimal::resultScale
      * @dataProvider resultScaleProvider
      */
     public function testResultScale($a, $b, $scale, $expected){
-        $this->assertSame($expected, \Direvus\Decimal\result_scale(
+        $this->assertSame($expected, Decimal::resultScale(
             new Decimal($a),
             new Decimal($b),
             $scale));
