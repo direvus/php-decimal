@@ -23,12 +23,17 @@ convenient, object-oriented, and intuitive API.
 Installation
 ------------
 
-Copy the library file 'decimal.php' to anywhere on your system you like.
-Personally I recommend something like `/usr/local/lib/php-decimal`, but it's
-totally up to you.
+The entire library is included in a single source file for ease of
+installation.  All you need to do is copy the library file 'decimal.php' to
+anywhere on your system you like.  Personally I use something like
+`/usr/local/lib/php-decimal.php`, but it's totally up to you.  For example:
 
-In your PHP code, execute `include '/path/to/lib/decimal.php';` and you're
-ready to use the library.
+```
+wget -O /usr/local/lib/php-decimal.php https://github.com/direvus/php-decimal/raw/master/decimal.php
+```
+
+In your PHP code, execute `include '/path/to/lib/php-decimal.php';`, or include
+it in your autoloader, and you're ready to use the library.
 
 Usage
 -----
@@ -65,13 +70,14 @@ bcscale that will be appropriate for all circumstances.
 Enter php-decimal:
 
     php > include '/path/to/lib/decimal.php';
+    php > use \Direvus\Decimal\Decimal;
     
-    php > $n = new Decimal\Decimal;
+    php > $n = new Decimal;
     php > $n->increase('0.1', '0.1', '0.1', '-0.3');
     php > var_dump((string) $n);
     string(1) "0"
     
-    php > var_dump($n->zero());
+    php > var_dump($n->isZero());
     bool(true)
 
 We didn't have to lock php-decimal into any particular precision for its
@@ -97,13 +103,18 @@ Each Decimal value represents the real number *n* such that:
 
     n = [-]digits × (10 ^ exponent)
 
-The number 7500 would be therefore represented internally by the values
-`('75', 2, false)`, respectively, as 7500 = 75 × 10^2.
+The number 7500 would be therefore represented internally by the values `('75',
+2, false)`, respectively, as 7500 = 75 × 10^2, whereas the number -0.75 would
+be represented internally as `('75', -2, true)`, for -75 × 10^-2.
 
 It can be seen that, for every real number which has a finite representation in
 decimal form, there are infinitely many possible Decimal representations, but
 only one representation which uses the minimal number of decimal digits, which
 is called the 'normal' or 'canonical' representation.
+
+It is possible to represent negative zero using a Decimal instance, but in
+effect this library treats zero as unsigned, and the canonical representation
+of zero is positive.
 
 Decimals can be initialised from other Decimal instances, strings describing
 numbers, integers and floats (with the caveat that if you initialise from a
@@ -118,13 +129,15 @@ leave PHP blissfully agnostic of difficult problems like basic arithmetic.
 Standards
 ---------
 
-This library has some superficial resemblances to the IEEE 854 and 754
-standards, but does not comply, nor does it attempt to comply, with these
-standards.  It would be possible to extend the library into compliance, but at
-this time the author has no intention of doing so.
+This library does not comply, nor does it attempt to comply, with the IEEE 754
+standard.
 
-In particular, php-decimal does not attempt to represent abstract numeric
-concepts like NaN ("Not a Number"), infinity or negative infinity.
+In particular, it does not include any representations of abstract numeric
+concepts like NaN ("Not a Number"), signed zero, infinity, or negative
+infinity.  The intention of php-decimal is to enable simple, practical
+arithmetic across the real numbers according to the Principle of Least
+Astonishment.  If you're looking to do some integral calculus, php-decimal is
+probably not the right tool for the job.
 
 License
 -------
@@ -145,7 +158,6 @@ This library was heavily inspired by the [decimal][2] module of Python's
 standard library, and the [numeric data type][3] of PostgreSQL.  If any credit
 is due, most of it belongs to the authors of these projects.
 
-  [1]: http://au2.php.net/manual/en/book.bc.php
+  [1]: http://php.net/manual/en/book.bc.php
   [2]: http://docs.python.org/2/library/decimal.html
   [3]: http://www.postgresql.org/docs/current/static/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL
-
