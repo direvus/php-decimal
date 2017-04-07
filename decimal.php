@@ -29,6 +29,9 @@ class Decimal {
     public static $zero;
     public static $one;
 
+    /**
+     * @param mixed $value An integer, float, Decimal or numeric string.
+     */
     public function __construct($value=0){
         if($value instanceof Decimal){
             $this->copy($value);
@@ -70,19 +73,22 @@ class Decimal {
         }
     }
 
-    /*
-     * Make this Decimal identical to $decimal by directly copying its 
-     * properties.
+    /**
+     * Make this object equal to $source by copying its properties.
+     *
+     * @param Decimal $source
      */
-    public function copy(Decimal $decimal){
-        $this->digits   = $decimal->digits;
-        $this->exponent = $decimal->exponent;
-        $this->negative = $decimal->negative;
+    public function copy(Decimal $source){
+        $this->digits   = $source->digits;
+        $this->exponent = $source->exponent;
+        $this->negative = $source->negative;
     }
 
-    /*
+    /**
      * Return the number of digits after the decimal point required to fully 
      * represent this value.
+     *
+     * @return int
      */
     public function getScale(){
         if($this->exponent >= 0){
@@ -92,11 +98,13 @@ class Decimal {
         }
     }
 
-    /*
-     * Compare this Decimal with a value, and return:
-     *     -1 if the instance is less than the given value,
-     *     0  if the instance is equal to the given value, or
-     *     1  if the instance is greater than the given value.
+    /**
+     * Compare this Decimal with a value.
+     *
+     * @param mixed $value
+     * @return int -1 if the instance is less than the $value,
+     *         0 if the instance is equal to $value, or
+     *         1 if the instance is greater than $value.
      */
     public function compare($value){
         $decimal = self::make($value);
@@ -312,12 +320,16 @@ class Decimal {
         return $result;
     }
 
-    /*
+    /**
      * Return a new Decimal which expresses this value at the given exponent.
      *
      * If this Decimal cannot be fully expressed using the target exponent, 
      * round the result using $method, which has the same meaning as in PHP's 
      * built-in round function.
+     *
+     * @param int $exponent The target exponent.
+     * @param int $method The rounding method to use, if necessary.
+     * @return Decimal
      */
     public function quantize($exponent, $method=PHP_ROUND_HALF_UP){
         $result = $this->compress();
@@ -356,14 +368,30 @@ class Decimal {
         return $result;
     }
 
-    /*
-     * Return a new Decimal which has been rounded to $places decimal places, 
-     * using $method per PHP's built-in round function.
+    /**
+     * Return a new Decimal from this instance which has been rounded.
+     *
+     * @param int $places Number of decimal places to round to.
+     * @param int $method The method to use for rounding, per PHP's built-in
+     *         round() function.
+     * @return Decimal
      */
     public function round($places, $method=PHP_ROUND_HALF_UP){
         return $this->quantize(\min(0, -$places), $method);
     }
 
+    /**
+     * Return a basic string representation of this Decimal.
+     *
+     * The output of this method is guaranteed to yield exactly the same value
+     * if fed back into the Decimal constructor.
+     *
+     * The format of the string is an optional negative sign marker, followed
+     * by one or more digits, followed optionally by the radix mark and one or
+     * more digits.
+     *
+     * @return string
+     */
     public function __toString(){
         if(!self::$raw_formatter instanceof Formatter){
             self::$raw_formatter = new Formatter(null, '', RADIX_MARK);
