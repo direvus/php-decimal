@@ -623,4 +623,3 @@ class GroupedMoneyFormatter extends MoneyFormatter {
         parent::__construct($places, $grouping, $radix_mark);
     }
 }
-?>
