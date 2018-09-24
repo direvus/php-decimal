@@ -2,16 +2,16 @@
 /*
  * Arbitrary-precision exact numeric library for PHP.
  *
- * This library wraps the PHP 'bcmath' extension, offering a more natural and 
- * convenient API by automatically determining a sensible scale to use for 
- * arithmetic results, and by automatically removing superfluous precision from 
+ * This library wraps the PHP 'bcmath' extension, offering a more natural and
+ * convenient API by automatically determining a sensible scale to use for
+ * arithmetic results, and by automatically removing superfluous precision from
  * numbers.
  *
- * See the README.md file in the top-level directory of this library for more 
+ * See the README.md file in the top-level directory of this library for more
  * details.
  *
- * This library is licensed under the "BSD 2-clause" open source license, the 
- * full text of which is available in the file 'LICENSE' in the top-level 
+ * This library is licensed under the "BSD 2-clause" open source license, the
+ * full text of which is available in the file 'LICENSE' in the top-level
  * directory of this library.
  */
 namespace Direvus\Decimal;
@@ -41,7 +41,7 @@ class Decimal {
                 $this->negative = true;
                 $clean = substr($clean, 1);
             }
-            // If the value contains an exponent specifier, parse and remove 
+            // If the value contains an exponent specifier, parse and remove
             // it.
             $clean = strtolower($clean);
             $pos = strrpos($clean, EXP_MARK);
@@ -49,7 +49,7 @@ class Decimal {
                 $this->exponent = (int) substr($clean, $pos + 1);
                 $clean = substr($clean, 0, $pos);
             }
-            // Remove the period and decrease the exponent by one for each 
+            // Remove the period and decrease the exponent by one for each
             // digit following the period.
             $pos = strpos($clean, RADIX_MARK);
             if($pos !== false){
@@ -58,7 +58,7 @@ class Decimal {
             }
             // Discard leading zeroes.
             $clean = ltrim($clean, ZERO);
-            // For integer values (non-negative exponents), remove trailing 
+            // For integer values (non-negative exponents), remove trailing
             // zeroes and increase the exponent by one for each digit removed.
             if($this->exponent >= 0){
                 $len = strlen($clean);
@@ -85,7 +85,7 @@ class Decimal {
     }
 
     /**
-     * Return the number of digits after the decimal point required to fully 
+     * Return the number of digits after the decimal point required to fully
      * represent this value.
      *
      * @return int
@@ -184,7 +184,7 @@ class Decimal {
     }
 
     /*
-     * Subtract $value from this Decimal and return the difference as a new 
+     * Subtract $value from this Decimal and return the difference as a new
      * Decimal.
      */
     public function subtract($value, $scale=null){
@@ -281,7 +281,7 @@ class Decimal {
     }
 
     /*
-     * Flip the sign of this Decimal, and return whether the result is 
+     * Flip the sign of this Decimal, and return whether the result is
      * negative.
      */
     public function negate(){
@@ -323,8 +323,8 @@ class Decimal {
     /**
      * Return a new Decimal which expresses this value at the given exponent.
      *
-     * If this Decimal cannot be fully expressed using the target exponent, 
-     * round the result using $method, which has the same meaning as in PHP's 
+     * If this Decimal cannot be fully expressed using the target exponent,
+     * round the result using $method, which has the same meaning as in PHP's
      * built-in round function.
      *
      * @param int $exponent The target exponent.
@@ -467,6 +467,9 @@ class Decimal {
             $chars = '\d' . RADIX_MARK . EXP_MARK . '-';
             $clean = preg_replace("/[^$chars]/i", '', $value);
             $clean = rtrim($clean, RADIX_MARK);
+            if (substr($clean, 0, 1) === '.') {
+                $clean = '0' . $clean;
+            }
             $pattern = '/^-?\d+(?:[' . RADIX_MARK . ']\d*)?(?:' .
                     EXP_MARK . '-?\d*)?$/i';
             if(!preg_match($pattern, $clean)){
