@@ -467,15 +467,17 @@ class Decimal {
             $chars = '\d' . RADIX_MARK . EXP_MARK . '-';
             $clean = preg_replace("/[^$chars]/i", '', $value);
             $clean = rtrim($clean, RADIX_MARK);
-            $pattern = '/^-?\d+(?:[' . RADIX_MARK . ']\d*)?(?:' .
-                    EXP_MARK . '-?\d*)?$/i';
+            $radix = '[' . RADIX_MARK . ']';
+            $pattern = '/^-?(?:\d+(?:' . $radix . '\d*)?|' .
+                    $radix . '\d+)(?:' . EXP_MARK . '-?\d*)?$/i';
             if(!preg_match($pattern, $clean)){
                 throw new \DomainException(
                     "Invalid Decimal value '$value'; " .
-                    "must contain at least one digit, optionally preceeded " .
-                    "by a sign specifier, optionally followed by " .
-                    RADIX_MARK . " and a fractional part, optionally followed " .
-                    "by " . EXP_MARK . " and an integer exponent.");
+                    "must contain either an integer part, a fractional " .
+                    "part, or both, separated by '" . RADIX_MARK . "', " .
+                    "optionally preceeded by a sign specifier, optionally " .
+                    "followed " .  "by " . EXP_MARK . "and an integer " .
+                    "exponent.");
             }
             return $clean;
         }
