@@ -467,7 +467,7 @@ class Decimal {
             $chars = '\d' . RADIX_MARK . EXP_MARK . '-';
             $clean = preg_replace("/[^$chars]/i", '', $value);
             $clean = rtrim($clean, RADIX_MARK);
-            if (substr($clean, 0, 1) === '.') {
+            if (substr($clean, 0, 1) === RADIX_MARK) {
                 $clean = '0' . $clean;
             }
             $pattern = '/^-?\d+(?:[' . RADIX_MARK . ']\d*)?(?:' .
